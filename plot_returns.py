@@ -4,10 +4,13 @@
 Created on Tue Nov  8 10:35:58 2022
 
 @author: Robbie von der Schmidt
+@contributor: Daksh Sharma
 
 
 """
-#import libraries, modules, and classes
+# TODO(robbiev): Move this entire thing to Colab so it can be iterated more easily.
+# See https://colab.research.google.com/.
+
 import time
 import pandas as pd
 import numpy as np
@@ -17,21 +20,42 @@ from sklearn.neighbors import KernelDensity
 from sklearn.model_selection import GridSearchCV
 import scipy.stats
 
-#start timer
+# Start the timer.
 t0 = time.perf_counter()
 
 def SummaryStatistics(data):
+    """
+    Returns a NumPy darray of some summary statistics for the given data.
+    Specifically, returns the length, minimum, maximum, mean, median, mode, stddev, skew, and kurtosis.
+    NOTE for the reader: code is easy, basic statistics is hard.
+
+    Args:
+    - data: A Pandas dataframe.
+    """
+
     sumstats = np.array([len(data), np.min(data), np.max(data), np.mean(data), np.median(data), float(scipy.stats.mode(data)[0]), np.std(data), float(scipy.stats.skew(data)[0]), float(scipy.stats.kurtosis(data)[0])])
     return sumstats
 
-#tune the kde bandwidth parameter, h, through cross validation
-def TBW_KernelDensityEstimate(X_train, bandwidth_search_range):
-     params = {'bandwidth': bandwidth_search_range}
+def TBW_KernelDensityEstimate(data, grid_search_range):
+    """
+    Returns a fitted SKL Estimator for the given training data
+    using Kernel Density estimation with 20-fold cross-validation.
+
+    Args:
+    - data. A numpy ndarray of data.
+    # TODO(robbiev): What should this data look like?
+
+    """
+     params = {'bandwidth': grid_search_range}
+     # TODO(robbiev): is 20 excessive? Unclear. If not, remove this TODO.
      grid = GridSearchCV(KernelDensity(), params, cv = 20)
-     return grid.fit(X_train.reshape(-1,1))
+     return grid.fit(data.reshape(-1,1))
 
 #return an array of densities for an array of values according to a KDE
 def Score(KernelDensity, x_axis):
+    """
+
+    """
     log_densities = KernelDensity.score_samples(x_axis)
     densities = np.exp(log_densities)
     return densities 
@@ -40,6 +64,8 @@ def Score(KernelDensity, x_axis):
 df = pd.read_csv('MAAMG.csv')
 GOOG = np.log((df['GOOG_Close'].iloc[1:].values/df['GOOG_Close'].iloc[:-1].values).reshape(-1,1))
 META = np.log((df['META_Close'].iloc[1:].values/df['META_Close'].iloc[:-1].values).reshape(-1,1))
+
+print(GOOG)
 
 #split data into training and test sets 
 GOOG_train, GOOG_test = train_test_split(GOOG, test_size = .1)
