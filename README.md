@@ -2,6 +2,3 @@
 # for modeling equities data.
 
 # Authors: Robbie von der Schmidt, Daksh Sharma
-
-# TOTO(ravds): Can we name this repo something like "FittingRandomWalks"?
-#              Or maybe "EquitiesModeling"?
